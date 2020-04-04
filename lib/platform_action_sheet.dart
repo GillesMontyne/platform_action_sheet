@@ -13,17 +13,18 @@ class PlatformActionSheet {
       {@required BuildContext context,
       Widget title,
       Widget message,
+      bool useRootNavigator,
       @required List<ActionSheetAction> actions}) {
     if (Platform.isIOS) {
-      _showCupertinoActionSheet(context, title, message, actions);
+      _showCupertinoActionSheet(context, title, message, useRootNavigator, actions);
     } else {
-      _settingModalBottomSheet(context, title, message, actions);
+      _settingModalBottomSheet(context, title, message, useRootNavigator, actions);
     }
   }
 }
 
 void _showCupertinoActionSheet(
-    BuildContext context, title, message, List<ActionSheetAction> actions) {
+    BuildContext context, title, message, bool useRootNavigator, List<ActionSheetAction> actions) {
   final noCancelOption = -1;
   // Cancel action is treated differently with CupertinoActionSheets
   var indexOfCancel = actions.lastIndexWhere((action) => action.isCancel);
@@ -45,7 +46,11 @@ void _showCupertinoActionSheet(
               .toList(),
           cancelButton:
               _cupertinoActionSheetActionFromAction(actions[indexOfCancel]));
-  showCupertinoModalPopup(context: context, builder: (_) => actionSheet);
+  showCupertinoModalPopup(
+      context: context,
+      useRootNavigator: useRootNavigator,
+      builder: (_) => actionSheet,
+  );
 }
 
 CupertinoActionSheetAction _cupertinoActionSheetActionFromAction(
@@ -73,10 +78,11 @@ ListTile _listTileFromAction(ActionSheetAction action) => action.hasArrow
       );
 
 void _settingModalBottomSheet(
-    context, title, message, List<ActionSheetAction> actions) {
+    context, title, message, bool useRootNavigator, List<ActionSheetAction> actions) {
   if (actions.isNotEmpty) {
     showModalBottomSheet(
         context: context,
+        useRootNavigator: useRootNavigator,
         builder: (_) {
           final _lastItem = 1, _secondLastItem = 2;
           return Container(
